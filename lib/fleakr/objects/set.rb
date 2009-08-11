@@ -21,7 +21,7 @@ module Fleakr
 
       has_many :photos, :comments
 
-      flickr_attribute :id, :title, :description
+      flickr_attribute :id, :title, :description, :primary
       flickr_attribute :count, :from => '@photos'
 
       find_all :by_user_id, :call => 'photosets.getList', :path => 'photosets/photoset'
