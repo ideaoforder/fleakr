@@ -25,6 +25,22 @@ module Fleakr
       #flickr_attribute :count, :from => '@photos'
 
       find_all :by_user_id, :call => 'collections.getTree', :path => 'collections/collection'
+      
+      private
+        def find_all(condition, options)
+          attribute    = options[:using].nil? ? condition.to_s.sub(/^by_/, '') : options[:using]
+          target_class = options[:class_name].nil? ? self.name : "Fleakr::Objects::#{options[:class_name]}"
+      
+          class_eval <<-CODE
+            def self.find_all_#{condition}(value, options = {})
+              options.merge!(:#{attribute} => value)
+            
+              response = Fleakr::Api::MethodRequest.with_response!('#{options[:call]}', options)
+              (response.body/'rsp/#{options[:path]}')
+              #.map {|e| #{target_class}.new(e) }
+            end
+          CODE
+        end
 
     end
   end

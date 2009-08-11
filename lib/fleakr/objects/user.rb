@@ -25,6 +25,7 @@ module Fleakr
     # few associations available to a user:
     # 
     # [sets] A list of this user's public sets (newest first). See Fleakr::Objects::Set for more information.
+    # [collections] A list of this user's public collections (newest first). See Fleakr::Objects::Set for more information.
     # [groups] A list of this user's public groups. See Fleakr::Objects::Group.
     # [photos] A list of this user's public photos (newest first).  See Fleakr::Objects::Photo.
     # [contacts] A list of this user's contacts - these are simply User objects
@@ -39,6 +40,7 @@ module Fleakr
     #  user.username
     #  user.sets
     #  user.contacts
+    #  user.collections
     #
     class User
 
@@ -55,7 +57,7 @@ module Fleakr
       flickr_attribute :pro, :from => 'person@ispro'
       flickr_attribute :admin, :from => 'person@isadmin'
 
-      has_many :sets, :groups, :photos, :contacts, :tags
+      has_many :sets, :groups, :photos, :contacts, :tags, :collections
 
       find_one :by_username, :call => 'people.findByUsername'
       find_one :by_email, :using => :find_email, :call => 'people.findByEmail'

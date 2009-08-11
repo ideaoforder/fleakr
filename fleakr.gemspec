@@ -35,6 +35,7 @@ Gem::Specification.new do |s|
      "lib/fleakr/core_ext/true_class.rb",
      "lib/fleakr/objects.rb",
      "lib/fleakr/objects/authentication_token.rb",
+     "lib/fleakr/objects/collection.rb",
      "lib/fleakr/objects/comment.rb",
      "lib/fleakr/objects/contact.rb",
      "lib/fleakr/objects/error.rb",
