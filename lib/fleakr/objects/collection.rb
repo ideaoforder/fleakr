@@ -19,27 +19,31 @@ module Fleakr
 
       include Fleakr::Support::Object
 
-      has_many :collections, :sets
-
       flickr_attribute :id, :title, :description, :iconlarge, :iconsmall
       #flickr_attribute :count, :from => '@photos'
+      attr_accessor :collections, :sets
 
       find_all :by_user_id, :call => 'collections.getTree', :path => 'collections/collection'
       
-      private
-        def find_all(condition, options)
-          attribute    = options[:using].nil? ? condition.to_s.sub(/^by_/, '') : options[:using]
-          target_class = options[:class_name].nil? ? self.name : "Fleakr::Objects::#{options[:class_name]}"
+      def initialize(document=nil)
+        self.class.attributes.each do |attribute|
+          value = attribute.value_from(document)
+          self.send("#{attribute.name}=".to_sym, value) unless value.nil?
+        end
+        self.sets = document.search("//set").map{|s| Fleakr::Objects::Set.new(s)} || []
+        self.collections = recurse_collections(document.search("//collection"))
+      end
       
-          class_eval <<-CODE
-            def self.find_all_#{condition}(value, options = {})
-              options.merge!(:#{attribute} => value)
-            
-              response = Fleakr::Api::MethodRequest.with_response!('#{options[:call]}', options)
-              (response.body/'rsp/#{options[:path]}')
-              #.map {|e| #{target_class}.new(e) }
-            end
-          CODE
+      private
+        def recurse_collections(search)
+          collections = Array.new
+          search.each do |e| 
+            c = self.class.new(e)
+            collections << c
+            c.sets = e.search("//set").map{|s| Fleakr::Objects::Set.new(s)} || []
+            c.collections = recurse_collections(e.search("//collection"))
+          end
+          return collections       
         end
 
     end

@@ -50,7 +50,6 @@ Gem::Specification.new do |s|
      "lib/fleakr/support.rb",
      "lib/fleakr/support/attribute.rb",
      "lib/fleakr/support/object.rb",
-     "lib/fleakr/version.rb",
      "test/fixtures/auth.checkToken.xml",
      "test/fixtures/auth.getFullToken.xml",
      "test/fixtures/auth.getToken.xml",
