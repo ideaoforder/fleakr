@@ -44,6 +44,10 @@ module Fleakr
       def file_prefix(index) # :nodoc:
         sprintf("%0#{self.count.length}d_", (index + 1))
       end
+      
+      def primary_photo
+        Photo.find_by_id(self.primary)
+      end
 
     end
   end
