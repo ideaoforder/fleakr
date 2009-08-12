@@ -34,6 +34,25 @@ module Fleakr
         self.collections = recurse_collections(document.search("//collection"))
       end
       
+      def self.find_all(condition, options)
+        attribute    = options[:using].nil? ? condition.to_s.sub(/^by_/, '') : options[:using]
+        target_class = options[:class_name].nil? ? self.name : "Fleakr::Objects::#{options[:class_name]}"
+    
+        class_eval <<-CODE
+          def self.find_all_#{condition}(value, options = {})
+            options.merge!(:#{attribute} => value)
+          
+            response = Fleakr::Api::MethodRequest.with_response!('#{options[:call]}', options)
+            document = response.body/'rsp/#{options[:path]}'
+            unless options[:title]
+              document.map {|e| #{target_class}.new(e) }
+            else
+              document.search("//collection[@title='#{options[:title]}']").map {|e| #{target_class}.new(e) }
+            end
+          end
+        CODE
+      end
+      
       private
         def recurse_collections(search)
           collections = Array.new
@@ -45,7 +64,6 @@ module Fleakr
           end
           return collections       
         end
-
     end
   end
 end
