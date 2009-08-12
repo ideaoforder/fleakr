@@ -91,6 +91,12 @@ module Fleakr
         response = Fleakr::Api::MethodRequest.with_response!('people.getInfo', :user_id => self.id)
         self.populate_from(response.body)
       end
+      
+      def collections_by_title(title)
+        response = Fleakr::Api::MethodRequest.with_response!('collections.getTree', :user_id => self.id)
+        document = response.body
+        document.search("//collection[@title='#{title}']").map {|e| Collection.new(e) }.first
+      end
 
     end
   end
